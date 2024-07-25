@@ -30,6 +30,7 @@ app.post("/resetPassword/:token", resetPassword);
 
 app.post("/new", singleAvatar, registerValidator(), validateHandler, newUser);
 app.post("/login", loginValidator(), validateHandler, login);
+app.get("/logout", logout);
 
 // After here user must be logged in to access the routes
 
@@ -38,7 +39,7 @@ app.use(isAuthenticated);
 app.get("/me", getMyProfile);
 app.put("/update", singleAvatar, updateMyProfile);
 
-app.get("/logout", logout);
+
 
 app.get("/search", searchUser);
 
