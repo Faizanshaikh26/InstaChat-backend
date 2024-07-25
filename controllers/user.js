@@ -8,10 +8,12 @@ import { User } from "../models/user.js";
 import {
   cookieOptions,
   emitEvent,
+  generateToken,
   sendToken,
   uploadFilesToCloudinary,
 } from "../utils/features.js";
 import { ErrorHandler } from "../utils/utility.js";
+import nodemailer from 'nodemailer'
 
 // Create a new user and save it to the database and save token in cookie
 const newUser = TryCatch(async (req, res, next) => {

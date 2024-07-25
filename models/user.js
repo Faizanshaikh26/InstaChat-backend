@@ -7,6 +7,10 @@ const schema = new Schema(
       type: String,
       required: true,
     },
+    email: {
+      type: String,
+      required: true,
+    },
     bio: {
       type: String,
       required: true,
@@ -31,6 +35,8 @@ const schema = new Schema(
         required: true,
       },
     },
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
   },
   {
     timestamps: true,
@@ -41,6 +47,7 @@ schema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
   this.password = await hash(this.password, 10);
+  next();
 });
 
 export const User = mongoose.models.User || model("User", schema);
