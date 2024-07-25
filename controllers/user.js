@@ -160,6 +160,33 @@ const getMyProfile = TryCatch(async (req, res, next) => {
     user,
   });
 });
+const updateMyProfile = TryCatch(async (req, res, next) => {
+  const { name, bio, email, username } = req.body;
+  const newUser = { name, bio, email, username };
+
+  // Check if a file is provided
+  const file = req.file;
+  if (file) {
+    const result = await uploadFilesToCloudinary([file]);
+    const avatar = {
+      public_id: result[0].public_id,
+      url: result[0].url,
+    };
+
+    // Add the avatar to newUser if a file is uploaded
+    newUser.avatar = avatar;
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(req.user, newUser, {
+    new: true,
+    runValidators: true,
+
+  });
+  const saveuser=updatedUser.save()
+
+  res.status(200).json({ success: true, saveuser });
+});
+
 
 const logout = TryCatch(async (req, res) => {
   return res
@@ -329,6 +356,7 @@ export {
   getMyFriends,
   getMyNotifications,
   getMyProfile,
+  updateMyProfile,
   login,
   forgotPassword,resetPassword,
   logout,

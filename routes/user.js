@@ -11,6 +11,7 @@ import {
   resetPassword,
   searchUser,
   sendFriendRequest,
+  updateMyProfile,
 } from "../controllers/user.js";
 import {
   acceptRequestValidator,
@@ -35,6 +36,7 @@ app.post("/login", loginValidator(), validateHandler, login);
 app.use(isAuthenticated);
 
 app.get("/me", getMyProfile);
+app.put("/update", singleAvatar, updateMyProfile);
 
 app.get("/logout", logout);
 
