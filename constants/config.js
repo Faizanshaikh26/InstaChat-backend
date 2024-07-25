@@ -9,6 +9,6 @@ const corsOptions = {
   credentials: true,
 };
 
-const CHATTU_TOKEN = "chattu-token";
+const INSTACHAT_TOKEN = "instaChat-token";
 
-export { corsOptions, CHATTU_TOKEN };
+export { corsOptions, INSTACHAT_TOKEN };

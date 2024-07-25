@@ -27,7 +27,6 @@ const app = express.Router();
 
 app.post("/forgotPassword", forgotPassword); // Forgot password route
 app.post("/resetPassword/:token", resetPassword);
-
 app.post("/new", singleAvatar, registerValidator(), validateHandler, newUser);
 app.post("/login", loginValidator(), validateHandler, login);
 app.get("/logout", logout);

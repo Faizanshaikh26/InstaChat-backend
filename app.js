@@ -1,12 +1,13 @@
-import { v2 as cloudinary } from "cloudinary";
-import cookieParser from "cookie-parser";
-import cors from "cors";
-import dotenv from "dotenv";
 import express from "express";
-import { createServer } from "http";
+import { connectDB } from "./utils/features.js";
+import dotenv from "dotenv";
+import { errorMiddleware } from "./middlewares/error.js";
+import cookieParser from "cookie-parser";
 import { Server } from "socket.io";
+import { createServer } from "http";
 import { v4 as uuid } from "uuid";
-import { corsOptions } from "./constants/config.js";
+import cors from "cors";
+import { v2 as cloudinary } from "cloudinary";
 import {
   CHAT_JOINED,
   CHAT_LEAVED,
@@ -17,19 +18,19 @@ import {
   STOP_TYPING,
 } from "./constants/events.js";
 import { getSockets } from "./lib/helper.js";
-import { socketAuthenticator } from "./middlewares/auth.js";
-import { errorMiddleware } from "./middlewares/error.js";
 import { Message } from "./models/message.js";
-import { connectDB } from "./utils/features.js";
+import { corsOptions } from "./constants/config.js";
+import { socketAuthenticator } from "./middlewares/auth.js";
 
-import adminRoute from "./routes/admin.js";
-import chatRoute from "./routes/chat.js";
 import userRoute from "./routes/user.js";
+import chatRoute from "./routes/chat.js";
+import adminRoute from "./routes/admin.js";
 
-import compression from "compression";
-import cacheControl from "express-cache-controller";
-import rateLimit from "express-rate-limit";
+import morgan from "morgan";
 import helmet from "helmet";
+import rateLimit from "express-rate-limit";
+import cacheControl from "express-cache-controller";
+import compression from "compression";
 
 dotenv.config({
   path: "./.env",
@@ -61,7 +62,7 @@ app.set("io", io);
 // Use security and logging middlewares
 app.use(compression())
 app.use(helmet());
-
+app.use(morgan("combined"));
 
 // Use rate limiting
 const limiter = rateLimit({
@@ -172,5 +173,4 @@ server.listen(port, () => {
   console.log(`Server is running on port ${port} in ${envMode} Mode`);
 });
 
-export { adminSecretKey, envMode, userSocketIDs };
-
+export { envMode, adminSecretKey, userSocketIDs };
