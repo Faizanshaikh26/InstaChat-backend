@@ -28,9 +28,6 @@ import userRoute from "./routes/user.js";
 
 
 import compression from "compression";
-import cacheControl from "express-cache-controller";
-import rateLimit from "express-rate-limit";
-import helmet from "helmet";
 
 dotenv.config({
   path: "./.env",
@@ -61,23 +58,11 @@ app.set("io", io);
 
 // Use security and logging middlewares
 app.use(compression())
-app.use(helmet());
 
 
-// Use rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
-});
-app.use(limiter);
 
-// Use cache control middleware
-app.use(
-  cacheControl({
-    maxAge: 60, // Cache responses for 60 seconds
-    public: true,
-  })
-);
+
+
 
 // Using Middlewares Here
 app.use(express.json());
