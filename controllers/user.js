@@ -14,11 +14,13 @@ import {
 } from "../utils/features.js";
 import { ErrorHandler } from "../utils/utility.js";
 import nodemailer from 'nodemailer'
+import NodeCache from "node-cache";
+const cache = new NodeCache({ stdTTL: 300, checkperiod: 120 });
+
 
 // Create a new user and save it to the database and save token in cookie
 const newUser = TryCatch(async (req, res, next) => {
-  const { name, username, password, bio ,email} = req.body;
-
+  const { name, username, password, bio, email } = req.body;
   const file = req.file;
 
   if (!file) return next(new ErrorHandler("Please Upload Avatar"));
@@ -39,8 +41,12 @@ const newUser = TryCatch(async (req, res, next) => {
     avatar,
   });
 
+  // Cache the new user's profile
+  cache.set(user._id.toString(), user);
+
   sendToken(res, user, 201, "User created");
 });
+
 
 // Login user and save token in cookie
 const login = TryCatch(async (req, res, next) => {
@@ -55,8 +61,12 @@ const login = TryCatch(async (req, res, next) => {
   if (!isMatch)
     return next(new ErrorHandler("Invalid Email or Password", 404));
 
+  // Update cache on login
+  cache.set(user._id.toString(), user);
+
   sendToken(res, user, 200, `Welcome Back, ${user.name}`);
 });
+
 const forgotPassword = async (req, res) => {
   if (!req.body.email) {
     return res.status(400).json({ success: false, error: "Email is required" });
@@ -153,9 +163,24 @@ const resetPassword = async (req, res) => {
 };
 
 const getMyProfile = TryCatch(async (req, res, next) => {
-  const user = await User.findById(req.user);
+  const userId = req.user;
+
+  // Check if the user's profile is in the cache
+  const cachedUser = cache.get(userId);
+  if (cachedUser) {
+    return res.status(200).json({
+      success: true,
+      user: cachedUser,
+    });
+  }
+
+  // If not cached, fetch from the database
+  const user = await User.findById(userId).lean();
 
   if (!user) return next(new ErrorHandler("User not found", 404));
+
+  // Cache the user's profile
+  cache.set(userId, user);
 
   res.status(200).json({
     success: true,
