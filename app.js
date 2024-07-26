@@ -1,13 +1,12 @@
-import express from "express";
-import { connectDB } from "./utils/features.js";
-import dotenv from "dotenv";
-import { errorMiddleware } from "./middlewares/error.js";
-import cookieParser from "cookie-parser";
-import { Server } from "socket.io";
-import { createServer } from "http";
-import { v4 as uuid } from "uuid";
-import cors from "cors";
 import { v2 as cloudinary } from "cloudinary";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import dotenv from "dotenv";
+import express from "express";
+import { createServer } from "http";
+import { Server } from "socket.io";
+import { v4 as uuid } from "uuid";
+import { corsOptions } from "./constants/config.js";
 import {
   CHAT_JOINED,
   CHAT_LEAVED,
@@ -18,25 +17,26 @@ import {
   STOP_TYPING,
 } from "./constants/events.js";
 import { getSockets } from "./lib/helper.js";
-import { Message } from "./models/message.js";
-import { corsOptions } from "./constants/config.js";
 import { socketAuthenticator } from "./middlewares/auth.js";
+import { errorMiddleware } from "./middlewares/error.js";
+import { Message } from "./models/message.js";
+import { connectDB } from "./utils/features.js";
 
-import userRoute from "./routes/user.js";
-import chatRoute from "./routes/chat.js";
 import adminRoute from "./routes/admin.js";
+import chatRoute from "./routes/chat.js";
+import userRoute from "./routes/user.js";
 
-import morgan from "morgan";
-import helmet from "helmet";
-import rateLimit from "express-rate-limit";
+
+import compression from "compression";
 import cacheControl from "express-cache-controller";
-// import compression from "compression";
+import rateLimit from "express-rate-limit";
+import helmet from "helmet";
 
 dotenv.config({
   path: "./.env",
 });
 
-const mongoURI = process.env.MONGO_URI;
+
 const port = process.env.PORT || 3000;
 const envMode = process.env.NODE_ENV?.trim() || "PRODUCTION";
 const adminSecretKey = process.env.ADMIN_SECRET_KEY || "adsasdsdfsdfsdfd";
@@ -60,9 +60,9 @@ const io = new Server(server, {
 app.set("io", io);
 
 // Use security and logging middlewares
-// app.use(compression())
+app.use(compression())
 app.use(helmet());
-app.use(morgan("combined"));
+
 
 // Use rate limiting
 const limiter = rateLimit({
@@ -173,4 +173,5 @@ server.listen(port, () => {
   console.log(`Server is running on port ${port} in ${envMode} Mode`);
 });
 
-export { envMode, adminSecretKey, userSocketIDs };
+export { adminSecretKey, envMode, userSocketIDs };
+
