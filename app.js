@@ -56,15 +56,9 @@ const io = new Server(server, {
 
 app.set("io", io);
 
-// Use security and logging middlewares
-app.use(compression())
-
-
-
-
-
 
 // Using Middlewares Here
+app.use(compression())
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOptions));
