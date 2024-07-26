@@ -43,14 +43,14 @@ const getMyChats = TryCatch(async (req, res, next) => {
     "name avatar"
   );
 
-  const transformedChats = chats.map(({ _id, name, members, groupChat }) => {
+  const transformedChats = chats?.map(({ _id, name, members, groupChat }) => {
     const otherMember = getOtherMember(members, req.user);
 
     return {
       _id,
       groupChat,
       avatar: groupChat
-        ? members.slice(0, 3).map(({ avatar }) => avatar.url)
+        ? members.slice(0, 3)?.map(({ avatar }) => avatar?.url)
         : [otherMember.avatar?.url],
       name: groupChat ? name : otherMember?.name,
       members: members.reduce((prev, curr) => {
