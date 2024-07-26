@@ -14,6 +14,11 @@ import {
 } from "../utils/features.js";
 import { ErrorHandler } from "../utils/utility.js";
 import nodemailer from 'nodemailer'
+import NodeCache from "node-cache";
+// const profileCache = new NodeCache({ stdTTL: 600, checkperiod: 120 });
+
+const profileCache = new NodeCache({ stdTTL: 86400, checkperiod: 120 }); // TTL of 1 day (24 hours)
+
 
 // Create a new user and save it to the database and save token in cookie
 const newUser = TryCatch(async (req, res, next) => {
@@ -153,11 +158,28 @@ const resetPassword = async (req, res) => {
 };
 
 const getMyProfile = TryCatch(async (req, res, next) => {
-  const user = await User.findById(req.user);
+  const userId = req.user;
 
+  // Create a cache key based on the user ID
+  const cacheKey = `profile-${userId}`;
+
+  // Check if the result is in the cache
+  const cachedProfile = profileCache.get(cacheKey);
+  if (cachedProfile) {
+    return res.status(200).json({
+      success: true,
+      user: cachedProfile,
+    });
+  }
+
+  // Fetch user from the database
+  const user = await User.findById(userId);
   if (!user) return next(new ErrorHandler("User not found", 404));
 
-  res.status(200).json({
+  // Cache the user profile
+  profileCache.set(cacheKey, user);
+
+  return res.status(200).json({
     success: true,
     user,
   });
