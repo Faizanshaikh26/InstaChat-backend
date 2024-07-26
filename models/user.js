@@ -10,6 +10,7 @@ const schema = new Schema(
     email: {
       type: String,
       required: true,
+      unique: true, 
     },
     bio: {
       type: String,
@@ -18,7 +19,7 @@ const schema = new Schema(
     username: {
       type: String,
       required: true,
-      unique: true,
+      unique: true, 
     },
     password: {
       type: String,
@@ -43,11 +44,16 @@ const schema = new Schema(
   }
 );
 
+// Hash the password before saving the document
 schema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
   this.password = await hash(this.password, 10);
   next();
 });
+
+//  indexes for better query performance
+schema.index({ email: 1 }); 
+schema.index({ resetPasswordToken: 1 });
 
 export const User = mongoose.models.User || model("User", schema);
