@@ -27,7 +27,7 @@ import chatRoute from "./routes/chat.js";
 import userRoute from "./routes/user.js";
 
 
-// import compression from "compression";
+import compression from "compression";
 import cacheControl from "express-cache-controller";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
@@ -60,7 +60,7 @@ const io = new Server(server, {
 app.set("io", io);
 
 // Use security and logging middlewares
-// app.use(compression())
+app.use(compression())
 app.use(helmet());
 
 
