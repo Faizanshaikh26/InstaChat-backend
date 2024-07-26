@@ -30,7 +30,7 @@ import morgan from "morgan";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import cacheControl from "express-cache-controller";
-import compression from "compression";
+// import compression from "compression";
 
 dotenv.config({
   path: "./.env",
@@ -60,7 +60,7 @@ const io = new Server(server, {
 app.set("io", io);
 
 // Use security and logging middlewares
-app.use(compression())
+// app.use(compression())
 app.use(helmet());
 app.use(morgan("combined"));
 
