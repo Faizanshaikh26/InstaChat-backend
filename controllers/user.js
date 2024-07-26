@@ -203,26 +203,23 @@ const logout = TryCatch(async (req, res) => {
 const searchUser = TryCatch(async (req, res) => {
   const { name = "" } = req.query;
 
-  // Finding all my chats
-  const myChats = await Chat.find({ groupChat: false, members: req.user });
+  // Finding All my chats
+  const myChats = await Chat?.find({ groupChat: false, members: req?.user });
 
-  // Extracting all users from my chats, which means friends or people I have chatted with
-  const allUsersFromMyChats = myChats.flatMap((chat) => chat.members);
+  //  extracting All Users from my chats means friends or people I have chatted with
+  const allUsersFromMyChats = myChats?.flatMap((chat) => chat?.members);
 
-  // Add the logged-in user's ID to the list of IDs to exclude
-  const excludeUserIds = [...allUsersFromMyChats, req.user._id.toString()];
-
-  // Finding all users except the logged-in user and their friends
-  const allUsersExceptMeAndFriends = await User.find({
-    _id: { $nin: excludeUserIds },
+  // Finding all users except me and my friends
+  const allUsersExceptMeAndFriends = await User?.find({
+    _id: { $nin: allUsersFromMyChats },
     name: { $regex: name, $options: "i" },
   });
 
   // Modifying the response
-  const users = allUsersExceptMeAndFriends.map(({ _id, name, avatar }) => ({
+  const users = allUsersExceptMeAndFriends?.map(({ _id, name, avatar }) => ({
     _id,
     name,
-    avatar: avatar.url,
+    avatar: avatar?.url,
   }));
 
   return res.status(200).json({
@@ -230,7 +227,6 @@ const searchUser = TryCatch(async (req, res) => {
     users,
   });
 });
-
 
 const sendFriendRequest = TryCatch(async (req, res, next) => {
   const { userId } = req.body;
