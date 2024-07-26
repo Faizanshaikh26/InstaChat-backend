@@ -43,18 +43,16 @@ const getMyChats = TryCatch(async (req, res, next) => {
     "name avatar"
   );
 
-  const transformedChats = chats?.map(({ _id, name, members, groupChat }) => {
+  const transformedChats = chats.map(({ _id, name, members, groupChat }) => {
     const otherMember = getOtherMember(members, req.user);
 
     return {
       _id,
       groupChat,
       avatar: groupChat
-        ? members
-            .slice(0, 3)
-            .map(({ avatar }) => avatar?.url || null) // Check if avatar exists
-        : [otherMember?.avatar?.url || null], // Check if otherMember and avatar exist
-      name: groupChat ? name : otherMember?.name || "Unknown", // Provide a default name if undefined
+        ? members.slice(0, 3).map(({ avatar }) => avatar.url)
+        : [otherMember.avatar.url],
+      name: groupChat ? name : otherMember.name,
       members: members.reduce((prev, curr) => {
         if (curr._id.toString() !== req.user.toString()) {
           prev.push(curr._id);
@@ -69,7 +67,6 @@ const getMyChats = TryCatch(async (req, res, next) => {
     chats: transformedChats,
   });
 });
-
 
 const getMyGroups = TryCatch(async (req, res, next) => {
   const chats = await Chat.find({
