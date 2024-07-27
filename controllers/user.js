@@ -167,7 +167,7 @@ const getMyProfile = TryCatch(async (req, res, next) => {
   }
 
   // If not cached, fetch from the database
-  const user = await User.findById(userId).lean();
+  const user = await User.findById(userId).select("name email avatar").lean();
 
   if (!user) return next(new ErrorHandler("User not found", 404));
 
@@ -199,11 +199,16 @@ const updateMyProfile = TryCatch(async (req, res, next) => {
   const updatedUser = await User.findByIdAndUpdate(req.user, newUser, {
     new: true,
     runValidators: true,
+  }).lean(); // Use lean() if you don't need Mongoose document methods
 
-  });
-  const saveuser=updatedUser.save()
+  if (!updatedUser) {
+    return next(new ErrorHandler("User not found", 404));
+  }
 
-  res.status(200).json({ success: true, saveuser });
+  // Update the cache with the new user data
+  cache.set(req.user, updatedUser);
+
+  res.status(200).json({ success: true, user: updatedUser });
 });
 
 
