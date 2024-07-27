@@ -13,13 +13,13 @@ import {
   uploadFilesToCloudinary,
 } from "../utils/features.js";
 import { ErrorHandler } from "../utils/utility.js";
-import nodemailer from "nodemailer";
+import nodemailer from 'nodemailer'
 import NodeCache from "node-cache";
 const cache = new NodeCache({ stdTTL: 300, checkperiod: 120 });
 
 // Create a new user and save it to the database and save token in cookie
 const newUser = TryCatch(async (req, res, next) => {
-  const { name, username, password, bio, email } = req.body;
+  const { name, username, password, bio ,email} = req.body;
 
   const file = req.file;
 
@@ -54,7 +54,8 @@ const login = TryCatch(async (req, res, next) => {
 
   const isMatch = await compare(password, user.password);
 
-  if (!isMatch) return next(new ErrorHandler("Invalid Email or Password", 404));
+  if (!isMatch)
+    return next(new ErrorHandler("Invalid Email or Password", 404));
 
   sendToken(res, user, 200, `Welcome Back, ${user.name}`);
 });
@@ -166,7 +167,7 @@ const getMyProfile = TryCatch(async (req, res, next) => {
   }
 
   // If not cached, fetch from the database
-  const user = await User.findById(userId).select("name email avatar").lean();
+  const user = await User.findById(userId).lean();
 
   if (!user) return next(new ErrorHandler("User not found", 404));
 
@@ -178,7 +179,6 @@ const getMyProfile = TryCatch(async (req, res, next) => {
     user,
   });
 });
-
 const updateMyProfile = TryCatch(async (req, res, next) => {
   const { name, bio, email, username } = req.body;
   const newUser = { name, bio, email, username };
@@ -199,11 +199,13 @@ const updateMyProfile = TryCatch(async (req, res, next) => {
   const updatedUser = await User.findByIdAndUpdate(req.user, newUser, {
     new: true,
     runValidators: true,
+
   });
-  const saveuser = updatedUser.save();
+  const saveuser=updatedUser.save()
 
   res.status(200).json({ success: true, saveuser });
 });
+
 
 const logout = TryCatch(async (req, res) => {
   return res
@@ -375,8 +377,7 @@ export {
   getMyProfile,
   updateMyProfile,
   login,
-  forgotPassword,
-  resetPassword,
+  forgotPassword,resetPassword,
   logout,
   newUser,
   searchUser,
