@@ -167,7 +167,7 @@ const getMyProfile = TryCatch(async (req, res, next) => {
   }
 
   // If not cached, fetch from the database
-  const user = await User.findById(userId).select("name email avatar").lean();
+  const user = await User.findById(userId).lean();
 
   if (!user) return next(new ErrorHandler("User not found", 404));
 
