@@ -15,7 +15,7 @@ import {
 import { ErrorHandler } from "../utils/utility.js";
 import nodemailer from 'nodemailer'
 import NodeCache from "node-cache";
-const cache = new NodeCache({ stdTTL: 300, checkperiod: 120 });
+const cache = new NodeCache({ stdTTL: 86400, checkperiod: 120 });
 
 // Create a new user and save it to the database and save token in cookie
 const newUser = TryCatch(async (req, res, next) => {
